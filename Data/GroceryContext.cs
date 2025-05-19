@@ -15,5 +15,6 @@ namespace Grocery.Data
         }
 
         public DbSet<Grocery.Models.Products> Products { get; set; } = default!;
+        public DbSet<Grocery.Models.Cart> Cart { get; set; } = default!;
     }
 }
