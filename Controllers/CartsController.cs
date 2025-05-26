@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Security.Claims;
+using Grocery.Data;
+using Grocery.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Grocery.Data;
-using Grocery.Models;
+using Microsoft.AspNetCore.Identity;
 
 namespace Grocery.Controllers
 {
@@ -44,10 +42,60 @@ namespace Grocery.Controllers
 
             return View(cart);
         }
+        public async Task<IActionResult> UserCart()
+        {
+            // Get the current logged-in user's ID
+            string userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-        public async Task<IActionResult> AddToCart() {
-            Console.WriteLine("Add to Cart is processing");
-            return RedirectToAction(nameof(Index));
+            // Check if user is authenticated
+            if (string.IsNullOrEmpty(userId))
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            // Fetch all cart items for the user, including related Product data
+            var userCarts = await _context.Cart
+                .Include(c => c.Product)
+                .Where(c => c.UserId == userId)
+                .ToListAsync();
+
+            return View(userCarts);
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> AddToCart(int productId, decimal quantity = 1)
+        {
+            
+            //string userIdString = User.Identities.FirstOrDefault(i => i.IsAuthenticated)?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            string userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            
+
+            if (string.IsNullOrEmpty(userIdString))
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var product = await _context.Products.FindAsync(productId);
+            if (product == null)
+            {
+                return NotFound("Product not found.");
+            }
+
+            // Create a new cart item
+            var cart = new Cart
+            {
+                ProductId = productId,
+                Quantity = quantity,
+                TotalPrice = product.Price * quantity,
+                UserId = userIdString,
+                CreatedAt = DateTime.Now
+            };
+
+            // Add to database
+            _context.Cart.Add(cart);
+            await _context.SaveChangesAsync();
+            TempData["SuccessMessage"] = "Product added to cart successfully!";
+            return RedirectToAction("Index", "Products"); 
         }
 
 

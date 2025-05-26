@@ -1,4 +1,6 @@
 ﻿@model IEnumerable<Grocery.Models.Products>
+@* @using Microsoft.AspNetCore.Authorization *@ *@
+@* @* @inject IAuthorizationService AuthorizationService *@
 
 @{
     ViewData["Title"] = "Index";
@@ -56,8 +58,14 @@
                 @Html.DisplayFor(modelItem => item.status)
             </td>
             <td>
-                <a asp-action="AddToCart" asp-controller="Carts"> Add to Cart</a>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                <form asp-controller="Carts" asp-action="AddToCart" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="productId" value="@item.Id" />
+                    <input type="number" name="quantity" value="1" min="1" style="width:60px;"/>
+                    <button type="submit" class="btn btn-primary">Add to Cart</button>
+                </form>
+
+                <a asp-action="Edit" asp-route-id="@item.Id" >Edit</a> |
                 <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
                 <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
             </td>

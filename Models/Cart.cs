@@ -10,7 +10,7 @@ namespace Grocery.Models
         public int ProductId { get; set; }
         public decimal Quantity { get; set; }
         public decimal TotalPrice { get; set; }
-        public int UserId { get; set; }
+        public string UserId { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.Now;
         // Navigation property
         public virtual Products Product
