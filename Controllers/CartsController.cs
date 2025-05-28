@@ -1,4 +1,4 @@
-﻿using System.Security.Claims;
+﻿using System.Security.Claims; //add
 using Grocery.Data;
 using Grocery.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -61,27 +61,30 @@ namespace Grocery.Controllers
 
             return View(userCarts);
         }
+
+
+
+        // POST: Carts/AddToCart)
+
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> AddToCart(int productId, decimal quantity = 1)
         {
-            
-            //string userIdString = User.Identities.FirstOrDefault(i => i.IsAuthenticated)?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            // Get Current User ID
             string userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            
 
             if (string.IsNullOrEmpty(userIdString))
             {
                 return RedirectToAction("Login", "Account");
             }
-
+            
+            //Get Product by ID
             var product = await _context.Products.FindAsync(productId);
             if (product == null)
             {
                 return NotFound("Product not found.");
             }
-
-            // Create a new cart item
             var cart = new Cart
             {
                 ProductId = productId,
@@ -90,12 +93,18 @@ namespace Grocery.Controllers
                 UserId = userIdString,
                 CreatedAt = DateTime.Now
             };
-
             // Add to database
             _context.Cart.Add(cart);
             await _context.SaveChangesAsync();
-            TempData["SuccessMessage"] = "Product added to cart successfully!";
-            return RedirectToAction("Index", "Products"); 
+            return RedirectToAction("Index", "Products");
+
+
+
+
+
+
+
+
         }
 
 
