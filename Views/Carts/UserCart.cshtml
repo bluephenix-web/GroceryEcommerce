@@ -41,6 +41,12 @@ else
     <p>Your cart is empty.</p>
 }
 
+<form asp-controller="Orders" asp-action="Checkout" method="post">
+    @Html.AntiForgeryToken()
+    <button type="submit" class="btn btn-primary">Checkout</button>
+</form>
+
+
 <p>
     <a asp-controller="Products" asp-action="Index">Continue Shopping</a>
 </p>
