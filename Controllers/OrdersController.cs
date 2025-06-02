@@ -72,18 +72,24 @@ namespace Grocery.Controllers
                 totalAmount = userCarts.Sum(c => c.TotalPrice)
             };
             _context.Order.Add(order);
+            await _context.SaveChangesAsync();  //saving order to db
 
             var orderItems = userCarts.Select(c => new OrderItem
             {
                 orderId = order.Id,
-                cartId = c.Id,
+                cartId = c.Id,  
                 quantity = c.Quantity,
-                price = c.TotalPrice,
+                price = c.TotalPrice / c.Quantity, //unit price
                 totalPrice = c.TotalPrice,
                 discount = 0 
             }).ToList();
 
-            return View();
+            _context.OrderItem.AddRange(orderItems);
+
+            _context.Cart.RemoveRange(userCarts);
+            await _context.SaveChangesAsync();
+
+            return View(order);
 
         }
 

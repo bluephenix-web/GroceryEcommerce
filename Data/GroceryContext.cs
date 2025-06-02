@@ -17,5 +17,6 @@ namespace Grocery.Data
         public DbSet<Grocery.Models.Products> Products { get; set; } = default!;
         public DbSet<Grocery.Models.Cart> Cart { get; set; } = default!;
         public DbSet<Grocery.Models.Order> Order { get; set; } = default!;
+        public DbSet<Grocery.Models.OrderItem> OrderItem { get; set; } = default!;
     }
 }

@@ -9,5 +9,7 @@
         public decimal price { get; set; }
         public decimal totalPrice { get; set; }
         public decimal discount { get; set; } = 0;
+        public Order Order { get; set; } // Optional navigation property
+        public Cart Cart { get; set; } // Optional navigation property
     }
 }
